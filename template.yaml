@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ShoppingListApi
+
+  Sample SAM Template for ShoppingListApi
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  ShoppingListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/
+      Handler: api.lambdaHandler
+      Runtime: nodejs12.x
+      Events:
+        GetLists:
+          Type: Api
+          Properties:
+            Path: /lists
+            Method: get
+        PostList:
+          Type: Api
+          Properties:
+            Path: /lists
+            Method: post
+        
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  ShoppingListApi:
+    Description: "API Gateway endpoint URL for Prod stage for Shopping List Api function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/v1/lists/"
+  ShoppingListFunction:
+    Description: "Shopping List Lambda Function ARN"
+    Value: !GetAtt ShoppingListFunction.Arn
+  ShoppingListFunctionIamRole:
+    Description: "Implicit IAM Role created for Shopping List function"
+    Value: !GetAtt ShoppingListFunctionRole.Arn
