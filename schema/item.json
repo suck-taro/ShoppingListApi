@@ -1,0 +1,15 @@
+{
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "Id",
+      "AttributeType": "N"
+    }
+  ],
+  "TableName": "Item",
+  "KeySchema": [
+    {
+      "AttributeName": "Id",
+      "KeyType": "HASH"
+    }
+  ]
+}

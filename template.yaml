@@ -4,7 +4,7 @@ Description: >
   ShoppingListApi
 
   Sample SAM Template for ShoppingListApi
-  
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -14,29 +14,40 @@ Resources:
   ShoppingListFunction:
     Type: AWS::Serverless::Function
     Properties:
+      # 関数内で実行するコードのパス
       CodeUri: api/
       Handler: api.lambdaHandler
       Runtime: nodejs12.x
+      Policies: AmazonDynamoDBFullAccess
+      # Lambda内環境変数
+      Environment:
+          Variables:
+              DYNAMODB_ENDPOINT: ""
       Events:
-        GetLists:
-          Type: Api
-          Properties:
-            Path: /lists
-            Method: get
-        PostList:
-          Type: Api
-          Properties:
-            Path: /lists
-            Method: post
-        
-
+          # API Gatewayでアクセスする際のパスとメソッド
+          TaskList:
+              Type: Api
+              Properties:
+                  Path: /task
+                  Method: get
+  ItemDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+            - AttributeName: Id
+              AttributeType: N
+        TableName: Item
+        KeySchema:
+            - AttributeName: Id
+              KeyType: HASH
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ShoppingListApi:
     Description: "API Gateway endpoint URL for Prod stage for Shopping List Api function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/v1/lists/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/lists/"
   ShoppingListFunction:
     Description: "Shopping List Lambda Function ARN"
     Value: !GetAtt ShoppingListFunction.Arn
